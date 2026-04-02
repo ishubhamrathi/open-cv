@@ -1,4 +1,4 @@
-```
+
 # Compiled and build artifacts
 *.class
 *.o
@@ -14,6 +14,29 @@
 build/
 target/
 
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
+*.class
+*.exe
+*.dll
+*.so
+*.a
+*.out
+
+# Dependencies
+.venv/
+venv/
+node_modules/
+dist/
+build/
+target/
+.gradle/
+.mypy_cache/
+.pytest_cache/
+
 # Logs and temp files
 *.log
 *.tmp
@@ -23,11 +46,23 @@ target/
 *.swp
 *.swo
 
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+
 # System files
 .DS_Store
 Thumbs.db
 
-# Coverage reports
+
 coverage/
 htmlcov/
 .coverage
@@ -61,6 +96,34 @@ yarn-error.log*
 *.ear
 hs_err_pid*
 
+
+
 # Kotlin specific
 *.kotlin_metadata
-```
+
+# Compressed files
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
+
+# CI/CD
+.github/
