@@ -1,4 +1,4 @@
-```
+
 # Compiled and build artifacts
 *.class
 *.o
@@ -31,4 +31,4 @@ htmlcov/
 # System files
 .DS_Store
 Thumbs.db
-```
+``
