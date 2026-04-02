@@ -1,21 +1,32 @@
 package com.portfolio.service
 
+import com.portfolio.exception.InvalidCategoryException
+import com.portfolio.exception.ResourceNotFoundException
+import com.portfolio.mapper.KnowledgeMapper
 import com.portfolio.model.KnowledgeItem
 import com.portfolio.model.KnowledgeItemDTO
 import com.portfolio.repository.KnowledgeItemRepository
+import com.portfolio.util.AppConstants
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
 class KnowledgeService(
-    private val knowledgeItemRepository: KnowledgeItemRepository
+    private val knowledgeItemRepository: KnowledgeItemRepository,
+    private val knowledgeMapper: KnowledgeMapper
 ) {
+
+    companion object {
+        private val log = LoggerFactory.getLogger(KnowledgeService::class.java)
+    }
 
     /**
      * Get all active knowledge items
      */
     fun getAllKnowledgeItems(): List<KnowledgeItem> {
+        log.debug("Fetching all active knowledge items")
         return knowledgeItemRepository.findByIsActiveTrue()
     }
 
@@ -23,6 +34,13 @@ class KnowledgeService(
      * Get knowledge items by category
      */
     fun getKnowledgeByCategory(category: String): List<KnowledgeItem> {
+        // Validate category
+        if (category !in AppConstants.VALID_CATEGORIES) {
+            log.warn("Invalid category requested: {}", category)
+            throw InvalidCategoryException(category, AppConstants.VALID_CATEGORIES)
+        }
+        
+        log.debug("Fetching knowledge items for category: {}", category)
         return knowledgeItemRepository.findByCategoryAndIsActiveTrue(category)
     }
 
@@ -30,6 +48,7 @@ class KnowledgeService(
      * Get a single knowledge item by ID
      */
     fun getKnowledgeItem(id: Long): KnowledgeItem? {
+        log.debug("Fetching knowledge item with id: {}", id)
         return knowledgeItemRepository.findById(id).orElse(null)
     }
 
@@ -38,18 +57,13 @@ class KnowledgeService(
      */
     @Transactional
     fun createKnowledgeItem(dto: KnowledgeItemDTO): KnowledgeItem {
-        val item = KnowledgeItem(
-            category = dto.category,
-            question = dto.question,
-            answer = dto.answer,
-            patterns = dto.patterns.toMutableList(),
-            confidence = dto.confidence,
-            isActive = dto.isActive,
-            tags = dto.tags,
-            metadata = dto.metadata,
+        log.info("Creating new knowledge item for category: {}", dto.category)
+        
+        val item = knowledgeMapper.toEntity(dto).copy(
             createdAt = LocalDateTime.now(),
             updatedAt = LocalDateTime.now()
         )
+        
         return knowledgeItemRepository.save(item)
     }
 
@@ -58,20 +72,16 @@ class KnowledgeService(
      */
     @Transactional
     fun updateKnowledgeItem(id: Long, dto: KnowledgeItemDTO): KnowledgeItem? {
-        val existingItem = knowledgeItemRepository.findById(id).orElse(null) ?: return null
+        log.info("Updating knowledge item with id: {}", id)
         
-        val updatedItem = existingItem.copy(
-            category = dto.category,
-            question = dto.question,
-            answer = dto.answer,
-            // Update patterns
-            patterns = applyPatternUpdates(existingItem.patterns, dto.patterns),
-            confidence = dto.confidence,
-            isActive = dto.isActive,
-            tags = dto.tags,
-            metadata = dto.metadata,
-            updatedAt = LocalDateTime.now()
-        )
+        val existingItem = knowledgeItemRepository.findById(id)
+            .orElseThrow { 
+                log.warn("Knowledge item not found with id: {}", id)
+                ResourceNotFoundException("KnowledgeItem", id) 
+            }
+        
+        val updatedItem = knowledgeMapper.updateEntity(existingItem, dto)
+            .copy(updatedAt = LocalDateTime.now())
         
         return knowledgeItemRepository.save(updatedItem)
     }
@@ -81,7 +91,14 @@ class KnowledgeService(
      */
     @Transactional
     fun deleteKnowledgeItem(id: Long): Boolean {
-        val item = knowledgeItemRepository.findById(id).orElse(null) ?: return false
+        log.info("Soft deleting knowledge item with id: {}", id)
+        
+        val item = knowledgeItemRepository.findById(id)
+            .orElseThrow { 
+                log.warn("Knowledge item not found with id: {}", id)
+                ResourceNotFoundException("KnowledgeItem", id) 
+            }
+        
         val deactivatedItem = item.copy(isActive = false, updatedAt = LocalDateTime.now())
         knowledgeItemRepository.save(deactivatedItem)
         return true
@@ -92,7 +109,13 @@ class KnowledgeService(
      */
     @Transactional
     fun hardDeleteKnowledgeItem(id: Long): Boolean {
-        if (!knowledgeItemRepository.existsById(id)) return false
+        log.info("Hard deleting knowledge item with id: {}", id)
+        
+        if (!knowledgeItemRepository.existsById(id)) {
+            log.warn("Knowledge item not found with id: {}", id)
+            return false
+        }
+        
         knowledgeItemRepository.deleteById(id)
         return true
     }
@@ -101,6 +124,7 @@ class KnowledgeService(
      * Search knowledge items
      */
     fun searchKnowledge(query: String): List<KnowledgeItem> {
+        log.debug("Searching knowledge items with query: {}", query)
         return knowledgeItemRepository.searchByQuery(query)
     }
 
@@ -108,6 +132,7 @@ class KnowledgeService(
      * Get all categories
      */
     fun getAllCategories(): List<String> {
+        log.debug("Fetching all categories")
         return knowledgeItemRepository.findAllCategories()
     }
 
@@ -115,6 +140,8 @@ class KnowledgeService(
      * Get statistics
      */
     fun getStatistics(): Map<String, Any> {
+        log.debug("Calculating knowledge base statistics")
+        
         val totalItems = knowledgeItemRepository.countByIsActiveTrue()
         val categories = knowledgeItemRepository.findAllCategories()
         val categoryCounts = categories.associateWith { category ->
@@ -133,21 +160,19 @@ class KnowledgeService(
      */
     @Transactional
     fun importKnowledgeItems(items: List<KnowledgeItemDTO>): Int {
+        log.info("Importing {} knowledge items", items.size)
+        
         var count = 0
         items.forEach { dto ->
             try {
                 createKnowledgeItem(dto)
                 count++
             } catch (e: Exception) {
-                // Log error but continue with other items
-                println("Failed to import item: ${dto.question} - ${e.message}")
+                log.error("Failed to import item: ${dto.question}", e)
             }
         }
+        
+        log.info("Successfully imported {} out of {} knowledge items", count, items.size)
         return count
-    }
-
-    private fun applyPatternUpdates(existingPatterns: MutableList<String>, newPatterns: List<String>): MutableList<String> {
-        // Simple strategy: replace all patterns
-        return newPatterns.toMutableList()
     }
 }
