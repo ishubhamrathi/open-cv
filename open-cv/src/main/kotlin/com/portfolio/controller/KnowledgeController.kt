@@ -1,7 +1,9 @@
 package com.portfolio.controller
 
+import com.portfolio.mapper.KnowledgeMapper
 import com.portfolio.model.KnowledgeItemDTO
 import com.portfolio.service.KnowledgeService
+import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -9,28 +11,22 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/knowledge")
 @CrossOrigin(origins = ["*"])
 class KnowledgeController(
-    private val knowledgeService: KnowledgeService
+    private val knowledgeService: KnowledgeService,
+    private val knowledgeMapper: KnowledgeMapper
 ) {
+
+    companion object {
+        private val log = LoggerFactory.getLogger(KnowledgeController::class.java)
+    }
 
     /**
      * Get all knowledge items
      */
     @GetMapping
     fun getAllKnowledge(): ResponseEntity<List<KnowledgeItemDTO>> {
-        val items = knowledgeService.getAllKnowledgeItems().map { item ->
-            KnowledgeItemDTO(
-                id = item.id,
-                category = item.category,
-                question = item.question,
-                answer = item.answer,
-                patterns = item.patterns,
-                confidence = item.confidence,
-                isActive = item.isActive,
-                tags = item.tags,
-                metadata = item.metadata
-            )
-        }
-        return ResponseEntity.ok(items)
+        log.debug("Fetching all knowledge items")
+        val items = knowledgeService.getAllKnowledgeItems()
+        return ResponseEntity.ok(knowledgeMapper.toDtoList(items))
     }
 
     /**
@@ -38,20 +34,9 @@ class KnowledgeController(
      */
     @GetMapping("/category/{category}")
     fun getByCategory(@PathVariable category: String): ResponseEntity<List<KnowledgeItemDTO>> {
-        val items = knowledgeService.getKnowledgeByCategory(category).map { item ->
-            KnowledgeItemDTO(
-                id = item.id,
-                category = item.category,
-                question = item.question,
-                answer = item.answer,
-                patterns = item.patterns,
-                confidence = item.confidence,
-                isActive = item.isActive,
-                tags = item.tags,
-                metadata = item.metadata
-            )
-        }
-        return ResponseEntity.ok(items)
+        log.debug("Fetching knowledge items for category: {}", category)
+        val items = knowledgeService.getKnowledgeByCategory(category)
+        return ResponseEntity.ok(knowledgeMapper.toDtoList(items))
     }
 
     /**
@@ -59,20 +44,13 @@ class KnowledgeController(
      */
     @GetMapping("/{id}")
     fun getKnowledgeItem(@PathVariable id: Long): ResponseEntity<KnowledgeItemDTO?> {
-        val item = knowledgeService.getKnowledgeItem(id)?.let {
-            KnowledgeItemDTO(
-                id = it.id,
-                category = it.category,
-                question = it.question,
-                answer = it.answer,
-                patterns = it.patterns,
-                confidence = it.confidence,
-                isActive = it.isActive,
-                tags = it.tags,
-                metadata = it.metadata
-            )
+        log.debug("Fetching knowledge item with id: {}", id)
+        val item = knowledgeService.getKnowledgeItem(id)
+        return if (item != null) {
+            ResponseEntity.ok(knowledgeMapper.toDto(item))
+        } else {
+            ResponseEntity.notFound().build()
         }
-        return if (item != null) ResponseEntity.ok(item) else ResponseEntity.notFound().build()
     }
 
     /**
@@ -80,19 +58,9 @@ class KnowledgeController(
      */
     @PostMapping
     fun createKnowledge(@RequestBody dto: KnowledgeItemDTO): ResponseEntity<KnowledgeItemDTO> {
+        log.info("Creating new knowledge item via API")
         val created = knowledgeService.createKnowledgeItem(dto)
-        val response = KnowledgeItemDTO(
-            id = created.id,
-            category = created.category,
-            question = created.question,
-            answer = created.answer,
-            patterns = created.patterns,
-            confidence = created.confidence,
-            isActive = created.isActive,
-            tags = created.tags,
-            metadata = created.metadata
-        )
-        return ResponseEntity.ok(response)
+        return ResponseEntity.ok(knowledgeMapper.toDto(created))
     }
 
     /**
@@ -100,19 +68,10 @@ class KnowledgeController(
      */
     @PutMapping("/{id}")
     fun updateKnowledge(@PathVariable id: Long, @RequestBody dto: KnowledgeItemDTO): ResponseEntity<KnowledgeItemDTO?> {
+        log.info("Updating knowledge item with id: {} via API", id)
         val updated = knowledgeService.updateKnowledgeItem(id, dto)
         return if (updated != null) {
-            ResponseEntity.ok(KnowledgeItemDTO(
-                id = updated.id,
-                category = updated.category,
-                question = updated.question,
-                answer = updated.answer,
-                patterns = updated.patterns,
-                confidence = updated.confidence,
-                isActive = updated.isActive,
-                tags = updated.tags,
-                metadata = updated.metadata
-            ))
+            ResponseEntity.ok(knowledgeMapper.toDto(updated))
         } else {
             ResponseEntity.notFound().build()
         }
@@ -123,6 +82,7 @@ class KnowledgeController(
      */
     @DeleteMapping("/{id}")
     fun deleteKnowledge(@PathVariable id: Long): ResponseEntity<Map<String, String>> {
+        log.info("Deleting knowledge item with id: {} via API", id)
         val deleted = knowledgeService.deleteKnowledgeItem(id)
         return if (deleted) {
             ResponseEntity.ok(mapOf("message" to "Knowledge item deleted"))
@@ -136,20 +96,9 @@ class KnowledgeController(
      */
     @GetMapping("/search")
     fun searchKnowledge(@RequestParam query: String): ResponseEntity<List<KnowledgeItemDTO>> {
-        val items = knowledgeService.searchKnowledge(query).map { item ->
-            KnowledgeItemDTO(
-                id = item.id,
-                category = item.category,
-                question = item.question,
-                answer = item.answer,
-                patterns = item.patterns,
-                confidence = item.confidence,
-                isActive = item.isActive,
-                tags = item.tags,
-                metadata = item.metadata
-            )
-        }
-        return ResponseEntity.ok(items)
+        log.debug("Searching knowledge items with query: {}", query)
+        val items = knowledgeService.searchKnowledge(query)
+        return ResponseEntity.ok(knowledgeMapper.toDtoList(items))
     }
 
     /**
@@ -157,6 +106,7 @@ class KnowledgeController(
      */
     @GetMapping("/categories")
     fun getCategories(): ResponseEntity<List<String>> {
+        log.debug("Fetching all categories")
         return ResponseEntity.ok(knowledgeService.getAllCategories())
     }
 
@@ -165,6 +115,7 @@ class KnowledgeController(
      */
     @GetMapping("/stats")
     fun getStats(): ResponseEntity<Map<String, Any>> {
+        log.debug("Fetching knowledge base statistics")
         return ResponseEntity.ok(knowledgeService.getStatistics())
     }
 
@@ -173,6 +124,7 @@ class KnowledgeController(
      */
     @PostMapping("/import")
     fun importKnowledge(@RequestBody items: List<KnowledgeItemDTO>): ResponseEntity<Map<String, Int>> {
+        log.info("Importing {} knowledge items via API", items.size)
         val count = knowledgeService.importKnowledgeItems(items)
         return ResponseEntity.ok(mapOf("imported" to count))
     }

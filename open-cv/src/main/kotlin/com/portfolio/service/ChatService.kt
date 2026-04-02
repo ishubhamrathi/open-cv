@@ -1,9 +1,13 @@
 package com.portfolio.service
 
-import com.portfolio.chatbot.ChatbotEngine
+import com.portfolio.exception.InvalidChatInputException
+import com.portfolio.exception.ResourceNotFoundException
+import com.portfolio.mapper.KnowledgeMapper
 import com.portfolio.model.*
 import com.portfolio.repository.ChatMessageRepository
 import com.portfolio.repository.KnowledgeItemRepository
+import com.portfolio.util.AppConstants
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -13,16 +17,30 @@ import java.time.format.DateTimeFormatter
 class ChatService(
     private val chatbotEngine: ChatbotEngine,
     private val knowledgeItemRepository: KnowledgeItemRepository,
-    private val chatMessageRepository: ChatMessageRepository
+    private val chatMessageRepository: ChatMessageRepository,
+    private val knowledgeMapper: KnowledgeMapper
 ) {
+
+    companion object {
+        private val log = LoggerFactory.getLogger(ChatService::class.java)
+    }
 
     /**
      * Process a chat message and return a response
      */
     @Transactional
     fun processMessage(request: ChatRequest): ChatResponse {
+        // Validate input
+        if (request.message.isBlank()) {
+            throw InvalidChatInputException("Message cannot be empty")
+        }
+
+        val sanitizedMessage = request.message.trim().take(1000)
+        
+        log.info("Processing chat message for session: {}", request.sessionId)
+
         val userMessage = ChatMessage(
-            content = request.message,
+            content = sanitizedMessage,
             sender = MessageSender.USER,
             sessionId = request.sessionId
         )
@@ -32,7 +50,7 @@ class ChatService(
         val knowledgeItems = knowledgeItemRepository.findByIsActiveTrue()
         
         // Process query through chatbot engine
-        val botResponse = chatbotEngine.processQuery(request.message, knowledgeItems)
+        val botResponse = chatbotEngine.processQuery(sanitizedMessage, knowledgeItems)
         
         // Generate suggestions
         val suggestions = chatbotEngine.generateSuggestions(botResponse.category, knowledgeItems)
@@ -48,6 +66,8 @@ class ChatService(
         )
         chatMessageRepository.save(botMessage)
         
+        log.info("Chat response generated with confidence: {}", botResponse.confidence)
+        
         return ChatResponse(
             message = botResponse.answer,
             confidence = botResponse.confidence,
@@ -60,7 +80,8 @@ class ChatService(
     /**
      * Get chat history for a session
      */
-    fun getChatHistory(sessionId: String, limit: Int = 20): List<ChatMessage> {
+    fun getChatHistory(sessionId: String, limit: Int = AppConstants.CHAT_HISTORY_LIMIT): List<ChatMessage> {
+        log.debug("Fetching chat history for session: {} with limit: {}", sessionId, limit)
         return chatMessageRepository.findTop10BySessionIdOrderByTimestampDesc(sessionId)
             .reversed()
             .take(limit)
@@ -71,6 +92,7 @@ class ChatService(
      */
     @Transactional
     fun clearChatHistory(sessionId: String) {
+        log.info("Clearing chat history for session: {}", sessionId)
         chatMessageRepository.deleteBySessionId(sessionId)
     }
     
