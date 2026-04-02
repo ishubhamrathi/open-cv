@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Chat - Interactive CV</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <h1>💼 Portfolio Chat</h1>
+                <p>Interactive AI-Powered CV</p>
+            </div>
+            <nav class="nav">
+                <a href="#chat" class="nav-link active">Chat</a>
+                <a href="#admin" class="nav-link">Admin</a>
+            </nav>
+        </header>
+
+        <!-- Main Chat Section -->
+        <main id="chat-section" class="main-content">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h2>🤖 Ask me anything!</h2>
+                    <p>I can tell you about skills, experience, projects, education, and more.</p>
+                </div>
+
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message bot-message">
+                        <div class="message-content">
+                            👋 Hello! Welcome to my interactive portfolio! 
+                            
+                            I'm an AI assistant that can tell you about:
+                            - 💻 My technical skills
+                            - 🏢 Work experience  
+                            - 🚀 Projects I've built
+                            - 🎓 Education and certifications
+                            - 📬 How to contact me
+                            
+                            Feel free to ask me anything!
+                        </div>
+                        <div class="message-time">Just now</div>
+                    </div>
+                </div>
+
+                <div class="suggestions" id="suggestions">
+                    <button class="suggestion-btn" onclick="sendSuggestion('What are your main skills?')">💻 Skills</button>
+                    <button class="suggestion-btn" onclick="sendSuggestion('Tell me about your experience')">🏢 Experience</button>
+                    <button class="suggestion-btn" onclick="sendSuggestion('What projects have you worked on?')">🚀 Projects</button>
+                    <button class="suggestion-btn" onclick="sendSuggestion('How can I contact you?')">📬 Contact</button>
+                </div>
+
+                <div class="chat-input-container">
+                    <input 
+                        type="text" 
+                        id="chat-input" 
+                        placeholder="Type your question..." 
+                        autocomplete="off"
+                        onkeypress="handleKeyPress(event)"
+                    >
+                    <button class="send-btn" onclick="sendMessage()">
+                        <span>Send</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Admin Section -->
+        <section id="admin-section" class="admin-content" style="display: none;">
+            <div class="admin-container">
+                <h2>🔧 Knowledge Base Management</h2>
+                <p>Add, edit, or remove information from the chatbot's knowledge base.</p>
+
+                <div class="admin-tabs">
+                    <button class="tab-btn active" onclick="showTab('view')">View All</button>
+                    <button class="tab-btn" onclick="showTab('add')">Add New</button>
+                    <button class="tab-btn" onclick="showTab('stats')">Statistics</button>
+                </div>
+
+                <!-- View Tab -->
+                <div id="view-tab" class="tab-content active">
+                    <div class="search-bar">
+                        <input type="text" id="search-input" placeholder="Search knowledge base..." onkeyup="searchKnowledge()">
+                    </div>
+                    <div id="knowledge-list" class="knowledge-list">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Add/Edit Tab -->
+                <div id="add-tab" class="tab-content">
+                    <form id="knowledge-form" class="knowledge-form">
+                        <input type="hidden" id="edit-id">
+                        
+                        <div class="form-group">
+                            <label for="category">Category *</label>
+                            <select id="category" required>
+                                <option value="skills">Skills</option>
+                                <option value="experience">Experience</option>
+                                <option value="projects">Projects</option>
+                                <option value="education">Education</option>
+                                <option value="contact">Contact</option>
+                                <option value="general">General</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="question">Question *</label>
+                            <input type="text" id="question" required placeholder="e.g., What are your main skills?">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="answer">Answer *</label>
+                            <textarea id="answer" rows="6" required placeholder="Enter the detailed answer..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="patterns">Question Patterns (comma-separated)</label>
+                            <input type="text" id="patterns" placeholder="what are your skills, programming languages, tech stack">
+                            <small>Different ways users might ask this question</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tags">Tags (comma-separated)</label>
+                            <input type="text" id="tags" placeholder="skills,programming,technology">
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Save Knowledge Item</button>
+                            <button type="button" class="btn-secondary" onclick="resetForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Stats Tab -->
+                <div id="stats-tab" class="tab-content">
+                    <div class="stats-grid" id="stats-container">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built with ❤️ using Kotlin & Spring Boot</p>
+        </footer>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h3>Edit Knowledge Item</h3>
+            <form id="edit-form">
+                <input type="hidden" id="modal-edit-id">
+                
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="modal-category">
+                        <option value="skills">Skills</option>
+                        <option value="experience">Experience</option>
+                        <option value="projects">Projects</option>
+                        <option value="education">Education</option>
+                        <option value="contact">Contact</option>
+                        <option value="general">General</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Question</label>
+                    <input type="text" id="modal-question" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Answer</label>
+                    <textarea id="modal-answer" rows="6" required></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Update</button>
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
