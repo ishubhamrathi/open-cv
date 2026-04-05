@@ -52,8 +52,8 @@ class ChatService(
         // Process query through chatbot engine
         val botResponse = chatbotEngine.processQuery(sanitizedMessage, knowledgeItems)
         
-        // Generate suggestions
-        val suggestions = chatbotEngine.generateSuggestions(botResponse.category, knowledgeItems)
+        // Generate suggestions (excluding the current question)
+        val suggestions = chatbotEngine.generateSuggestions(botResponse.category, knowledgeItems, sanitizedMessage)
         
         // Save bot response
         val botMessage = ChatMessage(

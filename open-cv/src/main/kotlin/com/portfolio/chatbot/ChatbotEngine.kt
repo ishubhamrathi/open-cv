@@ -63,17 +63,56 @@ class ChatbotEngine {
     
     /**
      * Generate follow-up suggestions based on the matched category
+     * Excludes the current question and provides diverse suggestions from other categories
      */
-    fun generateSuggestions(category: String?, knowledgeItems: List<KnowledgeItem>): List<String> {
+    fun generateSuggestions(category: String?, knowledgeItems: List<KnowledgeItem>, currentQuestion: String? = null): List<String> {
         if (category == null) {
             return listOf("What are your main skills?", "Tell me about your experience", "What projects have you worked on?")
         }
         
+        // Get items from the same category but exclude the current question
         val relatedItems = knowledgeItems.filter { 
-            it.category == category && it.isActive 
-        }.take(3)
+            it.category == category && it.isActive && 
+            !it.question.equals(currentQuestion, ignoreCase = true)
+        }
         
-        return relatedItems.map { it.question }
+        // Get items from other categories for diversity
+        val otherCategoryItems = knowledgeItems.filter { 
+            it.category != category && it.isActive 
+        }
+        
+        // If we have related items (excluding current), suggest 1-2 from same category
+        val suggestions = mutableListOf<String>()
+        
+        if (relatedItems.isNotEmpty()) {
+            suggestions.addAll(relatedItems.take(2).map { it.question })
+        }
+        
+        // Fill remaining slots with items from other categories
+        val remainingSlots = 4 - suggestions.size
+        if (otherCategoryItems.isNotEmpty() && remainingSlots > 0) {
+            val shuffledOthers = otherCategoryItems.shuffled().take(remainingSlots)
+            suggestions.addAll(shuffledOthers.map { it.question })
+        }
+        
+        // If we still don't have enough suggestions, add defaults
+        val defaultSuggestions = listOf(
+            "What are your main skills?",
+            "Tell me about your experience",
+            "What projects have you worked on?",
+            "How can I contact you?"
+        )
+        
+        while (suggestions.size < 4) {
+            val defaultToAdd = defaultSuggestions.firstOrNull { it !in suggestions }
+            if (defaultToAdd != null) {
+                suggestions.add(defaultToAdd)
+            } else {
+                break
+            }
+        }
+        
+        return suggestions.take(4)
     }
     
     private fun normalizeText(text: String): String {
