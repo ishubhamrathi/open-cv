@@ -99,6 +99,14 @@ async function sendMessage(message = null) {
 }
 
 function sendSuggestion(question) {
+    // Remove the clicked suggestion from the UI immediately
+    const suggestionsContainer = document.getElementById('suggestions');
+    const buttons = Array.from(suggestionsContainer.querySelectorAll('.suggestion-btn'));
+    const clickedButton = buttons.find(btn => btn.textContent.includes(question) || btn.getAttribute('onclick').includes(question));
+    if (clickedButton) {
+        clickedButton.remove();
+    }
+    
     sendMessage(question);
 }
 
