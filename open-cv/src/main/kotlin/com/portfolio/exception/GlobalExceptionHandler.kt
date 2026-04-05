@@ -26,7 +26,7 @@ class GlobalExceptionHandler {
         log.warn("Resource not found: {}", ex.message)
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
-            .body(ErrorResponse(ex.errorCode, ex.message, HttpStatus.NOT_FOUND.value()))
+            .body(ErrorResponse(ex.errorCode, ex.message ?: "Not found", HttpStatus.NOT_FOUND.value()))
     }
 
     /**
@@ -37,7 +37,7 @@ class GlobalExceptionHandler {
         log.warn("Validation failed: {}", ex.message)
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse(ex.errorCode, ex.message, HttpStatus.BAD_REQUEST.value(), ex.fieldErrors))
+            .body(ErrorResponse(ex.errorCode, ex.message ?: "Validation failed", HttpStatus.BAD_REQUEST.value(), ex.fieldErrors))
     }
 
     /**
@@ -48,7 +48,7 @@ class GlobalExceptionHandler {
         log.warn("Invalid category: {}", ex.message)
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse(ex.errorCode, ex.message, HttpStatus.BAD_REQUEST.value()))
+            .body(ErrorResponse(ex.errorCode, ex.message ?: "Invalid category", HttpStatus.BAD_REQUEST.value()))
     }
 
     /**
@@ -59,7 +59,7 @@ class GlobalExceptionHandler {
         log.warn("Invalid chat input: {}", ex.message)
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse(ex.errorCode, ex.message, HttpStatus.BAD_REQUEST.value()))
+            .body(ErrorResponse(ex.errorCode, ex.message ?: "Invalid input", HttpStatus.BAD_REQUEST.value()))
     }
 
     /**
@@ -70,7 +70,7 @@ class GlobalExceptionHandler {
         log.warn("Duplicate resource: {}", ex.message)
         return ResponseEntity
             .status(HttpStatus.CONFLICT)
-            .body(ErrorResponse(ex.errorCode, ex.message, HttpStatus.CONFLICT.value()))
+            .body(ErrorResponse(ex.errorCode, ex.message ?: "Duplicate resource", HttpStatus.CONFLICT.value()))
     }
 
     /**
@@ -81,7 +81,7 @@ class GlobalExceptionHandler {
         log.warn("Access denied: {}", ex.message)
         return ResponseEntity
             .status(HttpStatus.FORBIDDEN)
-            .body(ErrorResponse(ex.errorCode, ex.message, HttpStatus.FORBIDDEN.value()))
+            .body(ErrorResponse(ex.errorCode, ex.message ?: "Access denied", HttpStatus.FORBIDDEN.value()))
     }
 
     /**

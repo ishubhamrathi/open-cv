@@ -51,9 +51,9 @@ class ChatController(
         log.debug("Fetching chat history for session: {}", sessionId)
         
         val messages = chatService.getChatHistory(sessionId)
-        val response = messages.map { msg ->
-            mapOf(
-                "id" to msg.id,
+        val response: List<Map<String, Any>> = messages.map { msg ->
+            mapOf<String, Any>(
+                "id" to (msg.id ?: 0),
                 "content" to msg.content,
                 "sender" to msg.sender.name,
                 "timestamp" to msg.timestamp.toString(),

@@ -39,7 +39,7 @@ object AppConstants {
 
     // File upload
     const val MAX_FILE_SIZE_MB = 10L
-    const val ALLOWED_FILE_TYPES = setOf("pdf", "doc", "docx", "txt")
+    val ALLOWED_FILE_TYPES = setOf("pdf", "doc", "docx", "txt")
 
     // Session
     const val DEFAULT_SESSION_ID = "default"

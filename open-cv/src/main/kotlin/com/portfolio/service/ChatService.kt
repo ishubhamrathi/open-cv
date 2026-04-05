@@ -1,5 +1,6 @@
 package com.portfolio.service
 
+import com.portfolio.chatbot.ChatbotEngine
 import com.portfolio.exception.InvalidChatInputException
 import com.portfolio.exception.ResourceNotFoundException
 import com.portfolio.mapper.KnowledgeMapper
@@ -105,10 +106,10 @@ class ChatService(
             LocalDateTime.now().minusDays(7)
         )
         
-        return mapOf(
+        return mapOf<String, Any>(
             "totalSessions" to totalSessions,
             "recentMessagesCount" to recentMessages.size,
-            "lastActivity" to recentMessages.firstOrNull()?.timestamp
+            "lastActivity" to (recentMessages.firstOrNull()?.timestamp?.toString() ?: "N/A")
         )
     }
 }
