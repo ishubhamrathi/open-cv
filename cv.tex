@@ -1,0 +1,84 @@
+\documentclass[a4paper,10pt]{article}
+
+\usepackage[left=0.6in, right=0.6in, top=0.6in, bottom=0.6in]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2pt}
+
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
+\titlespacing{\section}{0pt}{8pt}{4pt}
+
+\begin{document}
+
+%====================
+% HEADER
+%====================
+\begin{center}
+    {\Large \textbf{SHUBHAM RATHI}} \\
+    \small
+    \href{mailto:your.email@gmail.com}{your.email@gmail.com} \;|\;
+    +91-XXXXXXXXXX \;|\;
+    \href{https://linkedin.com/in/ishubhamrathi }{LinkedIn} \;|\;
+    \href{https://github.com/ishubhanmrathi }{GitHub}
+\end{center}
+
+%====================
+% SUMMARY
+%====================
+\section*{Summary}
+Software Development Engineer with ~2 years of experience specializing in high-scale Fintech backend systems. Proven expertise in Kotlin, Spring Boot, and Event-Driven Architectures. Demonstrated SDE-II competencies by owning end-to-end feature lifecycles, mentoring juniors, and optimizing distributed system performance (reducing latency by 80\%) for millions of requests.
+
+%====================
+% SKILLS
+%====================
+\section*{Skills}
+\textbf{Languages:} Kotlin, Java, Scala \\
+\textbf{Backend:} Spring Boot, Microservices Architecture, Event-Driven Design, Reactive Programming \\
+\textbf{Messaging \& Data:} Apache Kafka, AWS SQS/SNS, PostgreSQL, DynamoDB, jOOQ \\
+\textbf{DevOps \& Observability:} Kubernetes (K8s), Docker, GitHub Actions, Datadog, Coralogix, Grafana
+
+%====================
+% EXPERIENCE
+%====================
+\section*{Experience}
+
+\textbf{Software Engineer} \hfill Oct 2024 -- Present \\
+\textbf{Jupiter}
+\begin{itemize}[leftmargin=*, itemsep=2pt, topsep=2pt]
+    \item \textbf{Feature Ownership:} Led the backend development of account and membership modules handling \textbf{millions+ requests/day}, ensuring high availability and data consistency.
+    \item \textbf{System Optimization:} Refactored core APIs using \textbf{Project Reactor}, reducing p99 latency from 600ms to \textbf{<100ms} and significantly improving resource utilization.
+    \item \textbf{Event-Driven Architecture:} Implemented resilient asynchronous workflows using \textbf{Kafka and AWS SQS/SNS}, decoupling membership upgrades from downstream financial accounting services.
+    \item \textbf{Technical Leadership:} Actively \textbf{mentored 2+ junior developers} through structured code reviews and design discussions; authored technical RFCs for new feature rollouts.
+    \item \textbf{Product Impact:} Engineered the "Credit Builder" module using third-party \textbf{CIBIL API} integrations, automating loan eligibility and driving Rs.\ 60L+ in disbursals.
+    \item \textbf{Modernization:} Spearheaded the migration of 10+ microservices to \textbf{Java 25}, leveraging modern language features to enhance security and performance.
+    \item \textbf{Operational Excellence:} Managed production stability via \textbf{Kubernetes} deployments and utilized \textbf{Datadog/Coralogix} for proactive incident response and RCAs.
+\end{itemize}
+
+\textbf{Software Engineer Intern} \hfill Oct 2023 -- Oct 2024 \\
+\textbf{Jupiter}
+\begin{itemize}[leftmargin=*, itemsep=2pt, topsep=2pt]
+    \item Developed the Account Closure flow involving complex state-machine validations across loans and mutual fund dependencies.
+    \item Integrated identity and risk-check modules (Aadhaar/PAN) to streamline the digital onboarding process.
+    \item Improved user conversion funnels from \textbf{21\% to 45\%} through data-driven nudge implementations.
+\end{itemize}
+
+%====================
+% EDUCATION
+%====================
+\section*{Education}
+\textbf{B.Tech in Computer Science \& Engineering}, Lovely Professional University \hfill 2024
+
+%====================
+% KEY PROJECTS & HIGHLIGHTS
+%====================
+\section*{Key Projects \& Highlights}
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+    \item \textbf{High-Scale Migration:} Successfully executed a zero-downtime migration of legacy services to a reactive stack, improving system throughput by 3x.
+    \item \textbf{Technical Documentation:} Documented architectural decisions and API contracts (Swagger/OpenAPI), facilitating seamless integration for mobile and frontend teams.
+    \item \textbf{On-Call Leadership:} Served as a primary point of contact for production criticalities, maintaining high system uptime through effective debugging and log analysis.
+\end{itemize}
+
+\end{document}
