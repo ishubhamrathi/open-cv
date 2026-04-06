@@ -10,6 +10,15 @@
 *.out
 *.pyc
 __pycache__/
+*.pyo
+*.pyd
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.tar.bz2
+*.tar.xz
 
 # Dependencies
 node_modules/
@@ -17,55 +26,39 @@ venv/
 .venv/
 .env
 .env.local
-*.env.*
-
-# Build directories
+.env.*
+.target/
+target/
+.gradle/
+build/
 dist/
-build/
-target/
-.gradle/
+out/
 
-# IDE files
-build/
-target/
-
-# Dependencies
-.gradle/
-node_modules/
-venv/
-.venv/
-__pycache__/
-.mypy_cache/
-.pytest_cache/
-
-# Editors
+# IDE and editor files
 .vscode/
 .idea/
 *.swp
 *.swo
 *.tmp
-
-# System files
-.DS_Store
+*.log
 Thumbs.db
+.DS_Store
 
-# Logs
-*.log
-.env
-.env.local
-*.env.*
-
-# Logs and temp files
-*.log
-*.tmp
-
-# Coverage
+# Testing and coverage
+.coverage
 coverage/
 htmlcov/
-.coverage
-
-# Cache directories
-.mypy_cache/
 .pytest_cache/
+.mypy_cache/
+.nyc_output/
+coverage-final.json
 
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Icon?
 ```
