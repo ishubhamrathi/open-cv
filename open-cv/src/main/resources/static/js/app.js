@@ -86,6 +86,12 @@ async function sendMessage(message = null) {
         // Update suggestions based on response
         if (data.suggestions && data.suggestions.length > 0) {
             updateSuggestions(data.suggestions);
+        } else {
+            // Clear suggestions if none provided
+            const suggestionsContainer = document.getElementById('suggestions');
+            if (suggestionsContainer) {
+                suggestionsContainer.innerHTML = '';
+            }
         }
         
         // Scroll to bottom
@@ -99,14 +105,6 @@ async function sendMessage(message = null) {
 }
 
 function sendSuggestion(question) {
-    // Remove the clicked suggestion from the UI immediately
-    const suggestionsContainer = document.getElementById('suggestions');
-    const buttons = Array.from(suggestionsContainer.querySelectorAll('.suggestion-btn'));
-    const clickedButton = buttons.find(btn => btn.textContent.includes(question) || btn.getAttribute('onclick').includes(question));
-    if (clickedButton) {
-        clickedButton.remove();
-    }
-    
     sendMessage(question);
 }
 
@@ -118,9 +116,17 @@ function addMessageToChat(content, sender) {
     const now = new Date();
     const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
+    // Avatar for user and bot
+    const userAvatar = 'U';
+    const botAvatar = 'AI';
+    const avatar = sender === 'user' ? userAvatar : botAvatar;
+    
     messageDiv.innerHTML = `
-        <div class="message-content">${formatMessage(content)}</div>
-        <div class="message-time">${timeString}</div>
+        <div class="message-avatar">${avatar}</div>
+        <div class="message-content-wrapper">
+            <div class="message-content">${formatMessage(content)}</div>
+            <div class="message-time">${timeString}</div>
+        </div>
     `;
     
     messagesContainer.appendChild(messageDiv);
@@ -141,11 +147,14 @@ function showTypingIndicator() {
     typingDiv.id = 'typing-indicator';
     
     typingDiv.innerHTML = `
-        <div class="message-content">
-            <div class="typing-indicator">
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
+        <div class="message-avatar">AI</div>
+        <div class="message-content-wrapper">
+            <div class="message-content">
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
             </div>
         </div>
     `;
