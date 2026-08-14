@@ -25,4 +25,7 @@ jobs:
         run: mvn clean install -DskipTests
 
       - name: Publish to GitHub Packages
-        run: mvn deploy -DskipTests -DserverId=github -DserverUsername=${{ github.actor }} -DserverPassword=${{ secrets.GITHUB_TOKEN }}
+        run: mvn deploy -DskipTests -s .mvn/settings.xml
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
