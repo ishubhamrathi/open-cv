@@ -1,0 +1,53 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:ama;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  thymeleaf:
+    cache: false
+
+ama:
+  default-mode: MANUAL
+  ai-mode: AUTO
+  knowledge-threshold: 0.5
+  rate-limit:
+    enabled: true
+    max-per-hour: 20
+  jdbc:
+    ddl-enabled: true
+    table-prefix: ama_
+  admin:
+    base-path: /api/ama/admin
+  providers:
+    openai:
+      enabled: false
+      api-key: ${AMA_OPENAI_API_KEY:}
+      model: gpt-4o-mini
+      base-url: https://api.openai.com/v1
+    anthropic:
+      enabled: false
+      api-key: ${AMA_ANTHROPIC_API_KEY:}
+      model: claude-3-5-haiku-latest
+      base-url: https://api.anthropic.com/v1
+    gemini:
+      enabled: false
+      api-key: ${AMA_GEMINI_API_KEY:}
+      model: gemini-1.5-flash
+      base-url: https://generativelanguage.googleapis.com/v1beta
+    ollama:
+      enabled: false
+      api-key: ""
+      model: llama3.2
+      base-url: http://localhost:11434
+
+ama.demo:
+  admin-user: admin
+  admin-password: ${AMA_ADMIN_PASSWORD:admin}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ask Shubham Anything</title>
+    <link rel="stylesheet" th:href="@{/css/ama.css}">
+</head>
+<body>
+<header>
+    <h1>Ask Me Anything</h1>
+    <nav>
+        <a href="/" class="active">Ask a question</a>
+        <a href="/admin" th:text="'Admin'">Admin</a>
+        <a href="/health">Health</a>
+    </nav>
+</header>
+
+<main>
+    <section class="card">
+        <h2>Ask Shubham anything</h2>
+        <form id="ask-form">
+            <label for="question">Your question *</label>
+            <textarea id="question" name="question" rows="4" maxlength="1000" required></textarea>
+
+            <label for="askerName">Your name</label>
+            <input id="askerName" name="askerName" type="text" maxlength="120">
+
+            <label for="askerEmail">Your email (for follow-up, optional)</label>
+            <input id="askerEmail" name="askerEmail" type="email">
+
+            <label for="category">Category</label>
+            <input id="category" name="category" type="text" placeholder="general, work, ...">
+
+            <div class="row">
+                <button type="submit">Ask</button>
+                <span id="ask-error" class="error"></span>
+            </div>
+        </form>
+        <div id="ask-result" class="result hidden">
+            <p id="ask-message"></p>
+            <p id="ask-track" class="track"></p>
+        </div>
+    </section>
+</main>
+
+<script th:src="@{/js/ama.js}"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AMA Health</title>
+    <link rel="stylesheet" th:href="@{/css/ama.css}">
+</head>
+<body>
+<header>
+    <h1>Ask Me Anything — Health</h1>
+    <nav>
+        <a th:href="@{/}">Public page</a>
+        <a th:href="@{/admin}">Admin</a>
+    </nav>
+</header>
+<main>
+    <section class="card">
+        <h2>Provider status</h2>
+        <table>
+            <thead>
+            <tr><th>Provider</th><th>Available</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${providers}">
+                <td th:text="${p.name()}">provider</td>
+                <td th:text="${p.available() ? 'yes' : 'no'}">—</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

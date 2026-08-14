@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AMA Admin</title>
+    <link rel="stylesheet" th:href="@{/css/ama.css}">
+</head>
+<body>
+<header>
+    <h1>Ask Me Anything — Admin</h1>
+    <nav>
+        <a th:href="@{/}">Public page</a>
+        <a href="#questions" class="active">Questions</a>
+        <a href="#knowledge">Knowledge base</a>
+        <a th:href="@{/logout}">Logout</a>
+    </nav>
+</header>
+
+<main>
+    <section class="card" id="questions">
+        <h2>Inbox</h2>
+        <div class="tabs">
+            <button class="tab" data-status="NEW" onclick="loadAdmin('NEW')">New</button>
+            <button class="tab" data-status="DRAFT" onclick="loadAdmin('DRAFT')">Drafts</button>
+            <button class="tab" data-status="PENDING" onclick="loadAdmin('PENDING')">Pending</button>
+            <button class="tab" data-status="PUBLISHED" onclick="loadAdmin('PUBLISHED')">Published</button>
+            <button class="tab active" data-status="" onclick="loadAdmin('')">All</button>
+        </div>
+        <div id="question-list" class="qlist">
+            <p class="muted">Loading…</p>
+        </div>
+    </section>
+
+    <section class="card" id="knowledge">
+        <h2>Knowledge base</h2>
+        <form id="knowledge-form" class="kb-form">
+            <label for="kbQ">Question</label>
+            <input id="kbQ" type="text" required>
+            <label for="kbA">Answer</label>
+            <textarea id="kbA" rows="3" required></textarea>
+            <label for="kbCat">Category</label>
+            <input id="kbCat" type="text" placeholder="general">
+            <label for="kbKw">Keywords (comma separated)</label>
+            <input id="kbKw" type="text" placeholder="portfolio, projects, contact">
+            <button type="submit">Add entry</button>
+        </form>
+        <div id="knowledge-list" class="qlist">
+            <p class="muted">Loading…</p>
+        </div>
+    </section>
+</main>
+
+<script th:src="@{/js/ama.js}"></script>
+</body>
+</html>
